@@ -24,9 +24,9 @@ def trans_station(st):
 
 def daily_process(x):
     if x < 10:
-        pas_data = pd.read_csv('/home/hadoop/一卡通乘客刷卡数据/SPTCC-2015040' + str(x) + '.csv', names=pas_col, encoding='GB2312')
+        pas_data = pd.read_csv('/data/SPTCC-2015040' + str(x) + '.csv', names=pas_col, encoding='GB2312')
     else:
-        pas_data = pd.read_csv('/home/hadoop/一卡通乘客刷卡数据/SPTCC-201504' + str(x) + '.csv', names=pas_col, encoding='GB2312')
+        pas_data = pd.read_csv('/data/SPTCC-201504' + str(x) + '.csv', names=pas_col, encoding='GB2312')
     print("transport is not subway:", len(pas_data.loc[pas_data.transport != u"地铁", :]))
     #filter records whose transport is not subway
     indexs = list(pas_data.loc[pas_data.transport != u"地铁", :].index)
@@ -120,7 +120,7 @@ def show_similar(sim_st):
 
 zjgk = model4_500.most_similar('张江高科')
 show_similar(zjgk)
-model4_500.save('/home/hadoop/一卡通乘客刷卡数据/word2vec/model30days/modelwin4')
+model4_500.save('/data/word2vec/model30days/modelwin4')
 
 #station & represent vector
 station_vec=[]
@@ -131,7 +131,7 @@ st_vec=pd.DataFrame(data)
 for i in range(len(station_vec[0])):
     st_vec['vec'+str(i)]=st_vec['vector'].apply(lambda x: x[i])
 st_vec=st_vec.drop(['vector'],1)
-st_vec.to_csv('/home/hadoop/一卡通乘客刷卡数据/word2vec/model30days/stavec.csv', header=False, index=False)
+st_vec.to_csv('/data/word2vec/model30days/stavec.csv', header=False, index=False)
 
 #save to pickle
 st_pic=[]
@@ -140,7 +140,7 @@ for i in range(len(station_list)):
     st_pic.append(temp)
 data3 = {'station':station_list,'vector':st_pic}
 st_str=pd.DataFrame(data3)
-st_str.to_pickle('/home/hadoop/一卡通乘客刷卡数据/word2vec/model30days/stavec.pkl')
+st_str.to_pickle('/data/word2vec/model30days/stavec.pkl')
 
 #客流潮汐性
 # res=[0 for i in range(108)]
