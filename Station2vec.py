@@ -86,6 +86,9 @@ def extract(df):
 def show_similar(sim_st):
     for j in range(len(sim_st)):
         print(sim_st[j][0], sim_st[j][1])
+
+
+        
 if __name__ == "__main__":
     pas = pd.DataFrame()
     # integrate the 30-day metro records
