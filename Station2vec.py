@@ -3,9 +3,9 @@ import chardet
 import pandas as pd
 from datetime import datetime
 import time
-import sys
+# import sys
 # reload(sys)
-sys.setdefaultencoding( "utf-8" )
+# sys.setdefaultencoding( "utf-8" )
 pas_col = ['id', 'date', 'time', 'station','transport', 'money', 'discount']
 
 # time format HH:MM:SS change into seconds
@@ -82,65 +82,63 @@ def extract(df):
         station_corpus.append(sentence)
         return station_corpus
 
-pas = pd.DataFrame()
-# integrate the 30-day metro records
-for i in range(1,31):
-     #discount=[4,5,6,11,12]
-     #if i not in discount:
-    p = daily_process(i)
-    p = p.drop(['index'],1)
-    pas = pas.append(p)
-
-pas=pas.reset_index()
-pas['station'] = pas['station'].apply(trans_station)
-print(pas.head(20))
-#sort each passenger by time
-pas = pas.sort_values(by=['id','date','time'])
-pas = pas.reset_index()
-pas = pas.drop(['level_0','index'],1)
-station_corpus=extract(pas)
-print(station_corpus[0:5])
-
-#station embedding(word2vec)
-model4_500 = word2vec.Word2Vec(station_corpus,workers=8,window=4,size=500,min_count=4,iter=30)
-
-# station name in the corpus
-st=pas.groupby(['station']).size().reset_index()
-st.columns=['station','counts']
-print(st.head(5))
-print(len(st))
-station_list=[]
-for i in range(len(st)):
-     station_list.append(st.loc[i,'station'])
-
 # show top 10 similar stations and similarity
 def show_similar(sim_st):
     for j in range(len(sim_st)):
         print(sim_st[j][0], sim_st[j][1])
+if __name__ == "__main__":
+    pas = pd.DataFrame()
+    # integrate the 30-day metro records
+    for i in range(1,31):
+        p = daily_process(i)
+        p = p.drop(['index'],1)
+        pas = pas.append(p)
 
-zjgk = model4_500.most_similar('张江高科')
-show_similar(zjgk)
-model4_500.save('/data/word2vec/model30days/modelwin4')
+    pas=pas.reset_index()
+    pas['station'] = pas['station'].apply(trans_station)
+    print(pas.head(20))
+    #sort each passenger by time
+    pas = pas.sort_values(by=['id','date','time'])
+    pas = pas.reset_index()
+    pas = pas.drop(['level_0','index'],1)
+    station_corpus=extract(pas)
+    print(station_corpus[0:5])
 
-#station & represent vector
-station_vec=[]
-for i in range(len(station_list)):
-    station_vec.append(list(model4_500.wv[station_list[i]]))
-data={'station':station_list,'vector':station_vec}
-st_vec=pd.DataFrame(data)
-for i in range(len(station_vec[0])):
-    st_vec['vec'+str(i)]=st_vec['vector'].apply(lambda x: x[i])
-st_vec=st_vec.drop(['vector'],1)
-st_vec.to_csv('/data/word2vec/model30days/stavec.csv', header=False, index=False)
+    #station embedding(word2vec)
+    model4_500 = word2vec.Word2Vec(station_corpus,workers=8,window=4,size=500,min_count=4,iter=30)
 
-#save to pickle
-st_pic=[]
-for i in range(len(station_list)):
-    temp = model4_500.wv[station_list[i]]
-    st_pic.append(temp)
-data3 = {'station':station_list,'vector':st_pic}
-st_str=pd.DataFrame(data3)
-st_str.to_pickle('/data/word2vec/model30days/stavec.pkl')
+    # get all station name in the corpus
+    st=pas.groupby(['station']).size().reset_index()
+    st.columns=['station','counts']
+    print(st.head(5))
+    print(len(st))
+    station_list=[]
+    for i in range(len(st)):
+        station_list.append(st.loc[i,'station'])
+
+    zjgk = model4_500.most_similar('张江高科')
+    show_similar(zjgk)
+    model4_500.save('/data/word2vec/model30days/modelwin4')
+
+    #station & represent vector
+    station_vec=[]
+    for i in range(len(station_list)):
+        station_vec.append(list(model4_500.wv[station_list[i]]))
+    data={'station':station_list,'vector':station_vec}
+    st_vec=pd.DataFrame(data)
+    for i in range(len(station_vec[0])):
+        st_vec['vec'+str(i)]=st_vec['vector'].apply(lambda x: x[i])
+    st_vec=st_vec.drop(['vector'],1)
+    st_vec.to_csv('/data/word2vec/model30days/stavec.csv', header=False, index=False)
+
+    #save to pickle
+    st_pic=[]
+    for i in range(len(station_list)):
+        temp = model4_500.wv[station_list[i]]
+        st_pic.append(temp)
+    data3 = {'station':station_list,'vector':st_pic}
+    st_str=pd.DataFrame(data3)
+    st_str.to_pickle('/data/word2vec/model30days/stavec.pkl')
 
 #客流潮汐性
 # res=[0 for i in range(108)]
