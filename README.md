@@ -4,6 +4,7 @@ The Station2vec framework consists of two components, for details please see the
 * station embedding.<br>
 ### Data description
 The data utilized is the 30 days' transaction records of smart card in April 2015, which is provided by Shanghai Public Transportation Card Company. For the file of each days' records (more than 800 MB) exceeds the limits, so can not upload. All the data used is more than 23 GB.<br>
+<br>
 The records is just as follows:<br>
 卡号	        日期	       时间	      站点	  行业	  金额<br>
 602141128	  2015-04-01	 07:51:08	   莘庄	   地铁	    0.0<br>
