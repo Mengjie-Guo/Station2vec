@@ -1,5 +1,4 @@
 # Station2vec: Regional function discovery based on metro passenger flow data embedding
-### An application of neural language models (word2vec) in stations sequences.
 The Station2vec framework consists of two components, for details please see the code: 
 * station corpus extraction
 * station embedding.<br>
